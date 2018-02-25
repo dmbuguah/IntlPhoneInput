@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.telephony.TelephonyManager;
 import android.util.AttributeSet;
@@ -23,6 +24,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
 import java.util.Locale;
+import java.util.Optional;
 
 public class IntlPhoneInput extends RelativeLayout {
     private final String DEFAULT_COUNTRY = Locale.getDefault().getCountry();
@@ -175,10 +177,14 @@ public class IntlPhoneInput extends RelativeLayout {
     /**
      * Set hint number for country
      */
-    public void setHint() {
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void setHint(Optional <String> mPhoneHint) {
         if (mPhoneEdit != null && mSelectedCountry != null && mSelectedCountry.getIso() != null) {
             Phonenumber.PhoneNumber phoneNumber = mPhoneUtil.getExampleNumberForType(mSelectedCountry.getIso(), PhoneNumberUtil.PhoneNumberType.MOBILE);
-            if (phoneNumber != null) {
+            if (mPhoneHint.isPresent()) {
+                mPhoneEdit.setHint(mPhoneHint.get());
+            } else if (phoneNumber != null) {
                 mPhoneEdit.setHint(mPhoneUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.NATIONAL));
             }
         }
@@ -188,6 +194,7 @@ public class IntlPhoneInput extends RelativeLayout {
      * Spinner listener
      */
     private AdapterView.OnItemSelectedListener mCountrySpinnerListener = new AdapterView.OnItemSelectedListener() {
+        @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             mSelectedCountry = mCountrySpinnerAdapter.getItem(position);
@@ -198,7 +205,7 @@ public class IntlPhoneInput extends RelativeLayout {
             mPhoneNumberWatcher = new PhoneNumberWatcher(mSelectedCountry.getIso());
             mPhoneEdit.addTextChangedListener(mPhoneNumberWatcher);
 
-            setHint();
+            setHint(Optional.<String>empty());
         }
 
         @Override
