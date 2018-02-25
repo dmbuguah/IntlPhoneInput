@@ -175,7 +175,7 @@ public class IntlPhoneInput extends RelativeLayout {
     /**
      * Set hint number for country
      */
-    private void setHint() {
+    public void setHint() {
         if (mPhoneEdit != null && mSelectedCountry != null && mSelectedCountry.getIso() != null) {
             Phonenumber.PhoneNumber phoneNumber = mPhoneUtil.getExampleNumberForType(mSelectedCountry.getIso(), PhoneNumberUtil.PhoneNumberType.MOBILE);
             if (phoneNumber != null) {
